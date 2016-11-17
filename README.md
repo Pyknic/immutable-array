@@ -8,12 +8,23 @@ The library uses a Builder Pattern for the array classes. When the builder is fi
 * Very large arrays (more than can be indexed with a 32-bit int) are backed by a number of direct buffers
 * If all values fit a smaller primitive, they will be warped (`long` to `int`, `int` to `short` etc)
 
-# Features
+## Features
 * 64-bit indexing
 * Thread-safe (after build() has been called)
-* Immutable using a Builder pattern
-* Variable backing structure depending on the data
+* Immutability using a Builder pattern
+* Booleans are stored as efficient bitmaps
+* Backing structure is decided depending on the data
 * Allocated buffers are cleared as soon as they are no longer used (no need to wait for GC)
+
+## Supported Types
+The following interfaces are part of the API:
+* BooleanImmutableArray
+* ByteImmutableArray
+* DoubleImmutableArray
+* FloatImmutableArray
+* IntImmutableArray
+* LongImmutableArray
+* ShortImmutableArray
 
 ## Example
 ```java
