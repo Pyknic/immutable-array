@@ -16,7 +16,10 @@
  */
 package com.github.pyknic.bigarray.internal;
 
+import com.github.pyknic.bigarray.BooleanImmutableArray;
 import com.github.pyknic.bigarray.ByteImmutableArray;
+import com.github.pyknic.bigarray.DoubleImmutableArray;
+import com.github.pyknic.bigarray.FloatImmutableArray;
 import com.github.pyknic.bigarray.IntImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
 import com.github.pyknic.bigarray.ShortImmutableArray;
@@ -26,13 +29,16 @@ import com.github.pyknic.bigarray.ShortImmutableArray;
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class EmptyImmutableArray 
+public final class EmptyImmutableArray 
 implements LongImmutableArray, 
            IntImmutableArray, 
            ShortImmutableArray, 
-           ByteImmutableArray {
+           ByteImmutableArray,
+           FloatImmutableArray,
+           DoubleImmutableArray,
+           BooleanImmutableArray {
     
-    EmptyImmutableArray() {}
+    public EmptyImmutableArray() {}
     
     @Override
     public long getAsLong(long index) {
@@ -51,6 +57,21 @@ implements LongImmutableArray,
 
     @Override
     public byte getAsByte(long index) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    
+    @Override
+    public float getAsFloat(long index) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+
+    @Override
+    public double getAsDouble(long index) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+
+    @Override
+    public boolean getAsBoolean(long index) {
         throw new ArrayIndexOutOfBoundsException();
     }
 

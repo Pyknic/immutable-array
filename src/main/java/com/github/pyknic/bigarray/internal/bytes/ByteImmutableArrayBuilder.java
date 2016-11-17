@@ -14,12 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.bytes;
 
 import com.github.pyknic.bigarray.ByteImmutableArray;
+import com.github.pyknic.bigarray.internal.EmptyImmutableArray;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.BUFFER_SIZE;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
 import com.github.pyknic.bigarray.internal.util.MemoryUtil;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -72,8 +71,8 @@ implements ByteImmutableArray.Builder {
         }
         
         if (outer == 0) {
-            final ByteBuffer current = buffers.getFirst();
             if (inner < Short.MAX_VALUE) {
+                final ByteBuffer current = buffers.getFirst();
                 try {
                     final byte[] array = new byte[inner];
                     for (int i = 0; i < inner; i++) {
@@ -84,9 +83,11 @@ implements ByteImmutableArray.Builder {
                     MemoryUtil.clear(current);
                 }
             } else {
-                return new ByteSingleBufferImmutableArrayImpl(current, inner);
+                rescaleLastBuffer();
+                return new ByteSingleBufferImmutableArrayImpl(buffers.getFirst(), inner);
             }
         } else {
+            rescaleLastBuffer();
             return new ByteMultiBufferImmutableArrayImpl(
                 bufferArray(), 
                 length()
@@ -102,25 +103,22 @@ implements ByteImmutableArray.Builder {
         return buffers.toArray(new ByteBuffer[outer + 1]);
     }
     
-    private void forEachThenClear(ByteConsumer action) {
-        final long length = length();
-        final ByteBuffer[] bufferArray = bufferArray();
-        
-        for (long l = 0; l < length; l++) {
-            final int o = outerIndex(l);
-            final int i = innerIndex(l);
-            
-            action.accept(bufferArray[o].get(i));
-            
-            // If we just consumed the last value in this buffer, clear it.
-            if (i + 1 == BUFFER_SIZE) {
-                MemoryUtil.clear(bufferArray[o]);
+    private void rescaleLastBuffer() {
+        final ByteBuffer last = buffers.removeLast();
+        if (inner > 0) {
+            if (inner < Short.MAX_VALUE) {
+                final byte[] temp = new byte[inner];
+                last.get(temp);
+                MemoryUtil.clear(last);
+                buffers.add(ByteBuffer.wrap(temp));
+            } else {
+                final ByteBuffer temp = ByteBuffer.allocate(inner);
+                for (int i = 0; i < inner; i++) {
+                    temp.put(i, last.get(i));
+                }
+                MemoryUtil.clear(last);
+                buffers.add(temp);
             }
         }
-    }
-    
-    @FunctionalInterface
-    private interface ByteConsumer {
-        void accept(byte value);
     }
 }

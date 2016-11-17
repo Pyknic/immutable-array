@@ -16,7 +16,7 @@
  */
 package com.github.pyknic.bigarray;
 
-import com.github.pyknic.bigarray.internal.ShortImmutableArrayBuilder;
+import com.github.pyknic.bigarray.internal.shorts.ShortImmutableArrayBuilder;
 
 /**
  * An immutable short array that can hold a very large number of elements. 

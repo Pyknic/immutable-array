@@ -14,37 +14,43 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.shorts;
 
 import com.github.pyknic.bigarray.IntImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
+import com.github.pyknic.bigarray.ShortImmutableArray;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class IntMultiBufferImmutableArrayImpl 
-implements IntImmutableArray, LongImmutableArray {
+final class ShortMultiBufferImmutableArrayImpl 
+implements ShortImmutableArray, IntImmutableArray, LongImmutableArray {
     
-    private final IntBuffer[] buffers;
+    private final ShortBuffer[] buffers;
     private final long length;
 
-    IntMultiBufferImmutableArrayImpl(IntBuffer[] buffers, long length) {
+    ShortMultiBufferImmutableArrayImpl(ShortBuffer[] buffers, long length) {
         this.buffers = buffers;
         this.length  = length;
     }
 
     @Override
     public long getAsLong(long index) {
-        return getAsInt(index);
+        return getAsShort(index);
+    }
+    
+    @Override
+    public int getAsInt(long index) {
+        return getAsShort(index);
     }
 
     @Override
-    public int getAsInt(long index) {
+    public short getAsShort(long index) {
         return buffers[outerIndex(index)].get(innerIndex(index));
     }
 

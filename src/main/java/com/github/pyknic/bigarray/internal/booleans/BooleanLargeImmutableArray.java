@@ -14,30 +14,32 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.booleans;
 
-import com.github.pyknic.bigarray.LongImmutableArray;
-import java.nio.LongBuffer;
-import static java.util.Objects.requireNonNull;
+import com.github.pyknic.bigarray.BooleanImmutableArray;
+import com.github.pyknic.bigarray.internal.util.BitUtil;
+import static com.github.pyknic.bigarray.internal.util.BitUtil.BITMASK_SIZE;
+import java.nio.ShortBuffer;
 
 /**
  *
  * @author Emil Forslund
- * @since  1.0.0
+ * @since  1.0.1
  */
-final class LongSingleBufferImmutableArrayImpl implements LongImmutableArray {
-
-    private final LongBuffer buffer;
-    private final int length;
+public final class BooleanLargeImmutableArray implements BooleanImmutableArray {
     
-    LongSingleBufferImmutableArrayImpl(LongBuffer buffer, int length) {
-        this.buffer = requireNonNull(buffer);
+    private final ShortBuffer buffer;
+    private final long length;
+
+    public BooleanLargeImmutableArray(ShortBuffer buffer, long length) {
+        this.buffer = buffer;
         this.length = length;
     }
-    
+
     @Override
-    public long getAsLong(long index) {
-        return buffer.get((int) index);
+    public boolean getAsBoolean(long index) {
+        final short bitmask = buffer.get((int) (index / BITMASK_SIZE));
+        return BitUtil.isSet(bitmask, index % BITMASK_SIZE);
     }
 
     @Override

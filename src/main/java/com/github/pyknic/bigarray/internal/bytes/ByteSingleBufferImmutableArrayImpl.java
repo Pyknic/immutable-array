@@ -14,44 +14,49 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.bytes;
 
+import com.github.pyknic.bigarray.ByteImmutableArray;
 import com.github.pyknic.bigarray.IntImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
 import com.github.pyknic.bigarray.ShortImmutableArray;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class ShortMultiBufferImmutableArrayImpl 
-implements ShortImmutableArray, IntImmutableArray, LongImmutableArray {
-    
-    private final ShortBuffer[] buffers;
-    private final long length;
+final class ByteSingleBufferImmutableArrayImpl 
+implements ByteImmutableArray, ShortImmutableArray, IntImmutableArray, LongImmutableArray {
 
-    ShortMultiBufferImmutableArrayImpl(ShortBuffer[] buffers, long length) {
-        this.buffers = buffers;
-        this.length  = length;
+    private final ByteBuffer buffer;
+    private final int length;
+    
+    ByteSingleBufferImmutableArrayImpl(ByteBuffer buffer, int length) {
+        this.buffer = requireNonNull(buffer);
+        this.length = length;
     }
 
     @Override
     public long getAsLong(long index) {
-        return getAsShort(index);
+        return getAsByte(index);
     }
     
     @Override
     public int getAsInt(long index) {
-        return getAsShort(index);
+        return getAsByte(index);
     }
-
+    
     @Override
     public short getAsShort(long index) {
-        return buffers[outerIndex(index)].get(innerIndex(index));
+        return getAsByte(index);
+    }
+    
+    @Override
+    public byte getAsByte(long index) {
+        return buffer.get((int) index);
     }
 
     @Override

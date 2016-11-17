@@ -14,12 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.longs;
 
-import com.github.pyknic.bigarray.IntImmutableArray;
+import com.github.pyknic.bigarray.DoubleImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
-import com.github.pyknic.bigarray.ShortImmutableArray;
-import java.nio.ShortBuffer;
+import java.nio.LongBuffer;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -27,29 +26,24 @@ import static java.util.Objects.requireNonNull;
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class ShortSingleBufferImmutableArrayImpl 
-implements ShortImmutableArray, IntImmutableArray, LongImmutableArray {
+public final class LongSingleBufferImmutableArrayImpl 
+implements LongImmutableArray, DoubleImmutableArray {
 
-    private final ShortBuffer buffer;
+    private final LongBuffer buffer;
     private final int length;
     
-    ShortSingleBufferImmutableArrayImpl(ShortBuffer buffer, int length) {
+    public LongSingleBufferImmutableArrayImpl(LongBuffer buffer, int length) {
         this.buffer = requireNonNull(buffer);
         this.length = length;
     }
 
     @Override
+    public double getAsDouble(long index) {
+        return Double.longBitsToDouble(getAsLong(index));
+    }
+    
+    @Override
     public long getAsLong(long index) {
-        return getAsShort(index);
-    }
-    
-    @Override
-    public int getAsInt(long index) {
-        return getAsShort(index);
-    }
-    
-    @Override
-    public short getAsShort(long index) {
         return buffer.get((int) index);
     }
 

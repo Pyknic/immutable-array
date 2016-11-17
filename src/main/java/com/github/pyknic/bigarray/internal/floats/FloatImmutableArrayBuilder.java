@@ -14,41 +14,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.floats;
 
-import com.github.pyknic.bigarray.ByteImmutableArray;
-import com.github.pyknic.bigarray.IntImmutableArray;
-import com.github.pyknic.bigarray.ShortImmutableArray;
-import com.github.pyknic.bigarray.internal.util.BitUtil;
+import com.github.pyknic.bigarray.internal.ints.IntMultiBufferImmutableArrayImpl;
+import com.github.pyknic.bigarray.internal.ints.IntSingleBufferImmutableArrayImpl;
+import com.github.pyknic.bigarray.internal.ints.IntImmutableArrayImpl;
+import com.github.pyknic.bigarray.FloatImmutableArray;
+import com.github.pyknic.bigarray.internal.EmptyImmutableArray;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.BUFFER_SIZE;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
 import com.github.pyknic.bigarray.internal.util.MemoryUtil;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.LinkedList;
-import java.util.function.IntConsumer;
 
 /**
  *
  * @author Emil Forslund
- * @since  1.0.0
+ * @since  1.0.1
  */
-public final class IntImmutableArrayBuilder
-implements IntImmutableArray.Builder {
+public final class FloatImmutableArrayBuilder 
+implements FloatImmutableArray.Builder {
     
-    private final LinkedList<IntBuffer> buffers;
-    private int bitmask;
+    private final LinkedList<IntBuffer> buffers; // Store in raw format.
     private int outer, inner;
-    
-    public IntImmutableArrayBuilder() {
+
+    public FloatImmutableArrayBuilder() {
         buffers = new LinkedList<>();
         outer   = 0;
         inner   = 0;
     }
-
+    
     @Override
-    public IntImmutableArray.Builder append(int value) {
+    public FloatImmutableArray.Builder append(float value) {
         final IntBuffer current;
         
         // If the specified outer index is not yet allocated, do that first.
@@ -61,8 +58,7 @@ implements IntImmutableArray.Builder {
         }
         
         // Store the value at the specified index.
-        current.put(inner, value);
-        bitmask |= value;
+        current.put(inner, Float.floatToIntBits(value));
         
         // If the inner index is about to overflow, reset it and increment outer
         // index until next time.
@@ -75,33 +71,14 @@ implements IntImmutableArray.Builder {
     }
 
     @Override
-    public IntImmutableArray build() {
+    public FloatImmutableArray build() {
         if (buffers.isEmpty()) {
             return new EmptyImmutableArray();
         }
         
-        // Could every long in this array be converted into an byte?
-        if (BitUtil.isLongToBytePossible(bitmask)) {
-            final ByteImmutableArray.Builder builder =
-                ByteImmutableArray.builder();
-            
-            forEachThenClear(value -> builder.append(BitUtil.intToByte(value)));
-            buffers.forEach(MemoryUtil::clear);
-            return (IntImmutableArray) builder.build();
-            
-        // Could every long in this array be converted into an short?
-        } else if (BitUtil.isLongToShortPossible(bitmask)) {
-            final ShortImmutableArray.Builder builder =
-                ShortImmutableArray.builder();
-            
-            forEachThenClear(value -> builder.append(BitUtil.intToShort(value)));
-            buffers.forEach(MemoryUtil::clear);
-            return (IntImmutableArray) builder.build();
-        }
-        
         if (outer == 0) {
-            final IntBuffer current = buffers.getFirst();
             if (inner < Short.MAX_VALUE) {
+                final IntBuffer current = buffers.getFirst();
                 try {
                     final int[] array = new int[inner];
                     for (int i = 0; i < inner; i++) {
@@ -112,16 +89,18 @@ implements IntImmutableArray.Builder {
                     MemoryUtil.clear(current);
                 }
             } else {
-                return new IntSingleBufferImmutableArrayImpl(current, inner);
+                rescaleLastBuffer();
+                return new IntSingleBufferImmutableArrayImpl(buffers.getFirst(), inner);
             }
         } else {
+            rescaleLastBuffer();
             return new IntMultiBufferImmutableArrayImpl(
                 bufferArray(), 
                 length()
             );
         }
     }
-    
+
     private long length() {
         return outer * BUFFER_SIZE + inner;
     }
@@ -130,19 +109,21 @@ implements IntImmutableArray.Builder {
         return buffers.toArray(new IntBuffer[outer + 1]);
     }
     
-    private void forEachThenClear(IntConsumer action) {
-        final long length = length();
-        final IntBuffer[] bufferArray = bufferArray();
-        
-        for (long l = 0; l < length; l++) {
-            final int o = outerIndex(l);
-            final int i = innerIndex(l);
-            
-            action.accept(bufferArray[o].get(i));
-            
-            // If we just consumed the last value in this buffer, clear it.
-            if (i + 1 == BUFFER_SIZE) {
-                MemoryUtil.clear(bufferArray[o]);
+    private void rescaleLastBuffer() {
+        final IntBuffer last = buffers.removeLast();
+        if (inner > 0) {
+            if (inner < Short.MAX_VALUE) {
+                final int[] temp = new int[inner];
+                last.get(temp);
+                MemoryUtil.clear(last);
+                buffers.add(IntBuffer.wrap(temp));
+            } else {
+                final IntBuffer temp = IntBuffer.allocate(inner);
+                for (int i = 0; i < inner; i++) {
+                    temp.put(i, last.get(i));
+                }
+                MemoryUtil.clear(last);
+                buffers.add(temp);
             }
         }
     }

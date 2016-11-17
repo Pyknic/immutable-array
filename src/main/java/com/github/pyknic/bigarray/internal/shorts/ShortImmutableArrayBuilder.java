@@ -14,49 +14,47 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.shorts;
 
 import com.github.pyknic.bigarray.ByteImmutableArray;
-import com.github.pyknic.bigarray.IntImmutableArray;
-import com.github.pyknic.bigarray.LongImmutableArray;
 import com.github.pyknic.bigarray.ShortImmutableArray;
+import com.github.pyknic.bigarray.internal.EmptyImmutableArray;
 import com.github.pyknic.bigarray.internal.util.BitUtil;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.BUFFER_SIZE;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
 import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
 import com.github.pyknic.bigarray.internal.util.MemoryUtil;
 import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.util.LinkedList;
-import java.util.function.LongConsumer;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-public final class LongImmutableArrayBuilder
-implements LongImmutableArray.Builder {
+public final class ShortImmutableArrayBuilder
+implements ShortImmutableArray.Builder {
     
-    private final LinkedList<LongBuffer> buffers;
-    private long bitmask;
+    private final LinkedList<ShortBuffer> buffers;
+    private short bitmask;
     private int outer, inner;
     
-    public LongImmutableArrayBuilder() {
+    public ShortImmutableArrayBuilder() {
         buffers = new LinkedList<>();
         outer   = 0;
         inner   = 0;
     }
 
     @Override
-    public LongImmutableArray.Builder append(long value) {
-        final LongBuffer current;
+    public ShortImmutableArray.Builder append(short value) {
+        final ShortBuffer current;
         
         // If the specified outer index is not yet allocated, do that first.
         if (outer == buffers.size()) {
             buffers.add(current = ByteBuffer.allocateDirect(
-                BUFFER_SIZE * Long.BYTES
-            ).asLongBuffer());
+                BUFFER_SIZE * Short.BYTES
+            ).asShortBuffer());
         } else {
             current = buffers.getLast();
         }
@@ -76,7 +74,7 @@ implements LongImmutableArray.Builder {
     }
 
     @Override
-    public LongImmutableArray build() {
+    public ShortImmutableArray build() {
         if (buffers.isEmpty()) {
             return new EmptyImmutableArray();
         }
@@ -86,46 +84,30 @@ implements LongImmutableArray.Builder {
             final ByteImmutableArray.Builder builder =
                 ByteImmutableArray.builder();
             
-            forEachThenClear(value -> builder.append(BitUtil.longToByte(value)));
+            forEachThenClear(value -> builder.append(BitUtil.shortToByte(value)));
             buffers.forEach(MemoryUtil::clear);
-            return (LongImmutableArray) builder.build();
-            
-        // Could every long in this array be converted into an short?
-        } else if (BitUtil.isLongToShortPossible(bitmask)) {
-            final ShortImmutableArray.Builder builder =
-                ShortImmutableArray.builder();
-            
-            forEachThenClear(value -> builder.append(BitUtil.longToShort(value)));
-            buffers.forEach(MemoryUtil::clear);
-            return (LongImmutableArray) builder.build();
-            
-        // Could every long in this array be converted into an int?
-        } else if (BitUtil.isLongToIntPossible(bitmask)) {
-            final IntImmutableArray.Builder builder =
-                IntImmutableArray.builder();
-            
-            forEachThenClear(value -> builder.append(BitUtil.longToInt(value)));
-            buffers.forEach(MemoryUtil::clear);
-            return (LongImmutableArray) builder.build();
+            return (ShortImmutableArray) builder.build();
         }
         
         if (outer == 0) {
-            final LongBuffer current = buffers.getFirst();
             if (inner < Short.MAX_VALUE) {
+                final ShortBuffer current = buffers.getFirst();
                 try {
-                    final long[] array = new long[inner];
+                    final short[] array = new short[inner];
                     for (int i = 0; i < inner; i++) {
                         array[i] = current.get(i);
                     }
-                    return new LongImmutableArrayImpl(array);
+                    return new ShortImmutableArrayImpl(array);
                 } finally {
                     MemoryUtil.clear(current);
                 }
             } else {
-                return new LongSingleBufferImmutableArrayImpl(current, inner);
+                rescaleLastBuffer();
+                return new ShortSingleBufferImmutableArrayImpl(buffers.getFirst(), inner);
             }
         } else {
-            return new LongMultiBufferImmutableArrayImpl(
+            rescaleLastBuffer();
+            return new ShortMultiBufferImmutableArrayImpl(
                 bufferArray(), 
                 length()
             );
@@ -136,13 +118,13 @@ implements LongImmutableArray.Builder {
         return outer * BUFFER_SIZE + inner;
     }
     
-    private LongBuffer[] bufferArray() {
-        return buffers.toArray(new LongBuffer[outer + 1]);
+    private ShortBuffer[] bufferArray() {
+        return buffers.toArray(new ShortBuffer[outer + 1]);
     }
     
-    private void forEachThenClear(LongConsumer action) {
+    private void forEachThenClear(ShortConsumer action) {
         final long length = length();
-        final LongBuffer[] bufferArray = bufferArray();
+        final ShortBuffer[] bufferArray = bufferArray();
         
         for (long l = 0; l < length; l++) {
             final int o = outerIndex(l);
@@ -155,5 +137,29 @@ implements LongImmutableArray.Builder {
                 MemoryUtil.clear(bufferArray[o]);
             }
         }
+    }
+    
+    private void rescaleLastBuffer() {
+        final ShortBuffer last = buffers.removeLast();
+        if (inner > 0) {
+            if (inner < Short.MAX_VALUE) {
+                final short[] temp = new short[inner];
+                last.get(temp);
+                MemoryUtil.clear(last);
+                buffers.add(ShortBuffer.wrap(temp));
+            } else {
+                final ShortBuffer temp = ShortBuffer.allocate(inner);
+                for (int i = 0; i < inner; i++) {
+                    temp.put(i, last.get(i));
+                }
+                MemoryUtil.clear(last);
+                buffers.add(temp);
+            }
+        }
+    }
+    
+    @FunctionalInterface
+    private interface ShortConsumer {
+        void accept(short value);
     }
 }

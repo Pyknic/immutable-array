@@ -14,54 +14,43 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.shorts;
 
-import com.github.pyknic.bigarray.ByteImmutableArray;
 import com.github.pyknic.bigarray.IntImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
 import com.github.pyknic.bigarray.ShortImmutableArray;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
-import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
-import java.nio.ByteBuffer;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class ByteMultiBufferImmutableArrayImpl 
-implements ByteImmutableArray, ShortImmutableArray, IntImmutableArray, LongImmutableArray {
-    
-    private final ByteBuffer[] buffers;
-    private final long length;
+final class ShortImmutableArrayImpl 
+implements ShortImmutableArray, IntImmutableArray, LongImmutableArray {
 
-    ByteMultiBufferImmutableArrayImpl(ByteBuffer[] buffers, long length) {
-        this.buffers = buffers;
-        this.length  = length;
+    private final short[] values;
+
+    ShortImmutableArrayImpl(short[] values) {
+        this.values = values;
     }
 
     @Override
     public long getAsLong(long index) {
-        return getAsByte(index);
+        return getAsShort(index);
+    }
+
+    @Override
+    public int getAsInt(long index) {
+        return getAsShort(index);
     }
     
     @Override
-    public int getAsInt(long index) {
-        return getAsByte(index);
-    }
-
-    @Override
     public short getAsShort(long index) {
-        return getAsByte(index);
-    }
-
-    @Override
-    public byte getAsByte(long index) {
-        return buffers[outerIndex(index)].get(innerIndex(index));
+        return values[(int) index];
     }
 
     @Override
     public long length() {
-        return length;
+        return values.length;
     }
 }

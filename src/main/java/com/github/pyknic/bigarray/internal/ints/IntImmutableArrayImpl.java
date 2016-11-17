@@ -14,38 +14,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.ints;
 
+import com.github.pyknic.bigarray.FloatImmutableArray;
 import com.github.pyknic.bigarray.IntImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
-import com.github.pyknic.bigarray.ShortImmutableArray;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class ShortImmutableArrayImpl 
-implements ShortImmutableArray, IntImmutableArray, LongImmutableArray {
+public final class IntImmutableArrayImpl 
+implements IntImmutableArray, LongImmutableArray, FloatImmutableArray {
 
-    private final short[] values;
+    private final int[] values;
 
-    ShortImmutableArrayImpl(short[] values) {
+    public IntImmutableArrayImpl(int[] values) {
         this.values = values;
     }
 
     @Override
+    public float getAsFloat(long index) {
+        return Float.intBitsToFloat(getAsInt(index));
+    }
+
+    @Override
     public long getAsLong(long index) {
-        return getAsShort(index);
+        return getAsInt(index);
     }
 
     @Override
     public int getAsInt(long index) {
-        return getAsShort(index);
-    }
-    
-    @Override
-    public short getAsShort(long index) {
         return values[(int) index];
     }
 

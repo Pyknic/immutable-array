@@ -16,10 +16,10 @@
  */
 package com.github.pyknic.bigarray;
 
-import com.github.pyknic.bigarray.internal.bytes.ByteImmutableArrayBuilder;
+import com.github.pyknic.bigarray.internal.booleans.BooleanImmutableArrayBuilder;
 
 /**
- * An immutable byte array that can hold a very large number of elements. 
+ * An immutable boolean array that can hold a very large number of elements. 
  * Implementations of this interface may or may not be backed by a direct buffer 
  * depending on the size and how the data contained is structured.
  * <p>
@@ -29,9 +29,9 @@ import com.github.pyknic.bigarray.internal.bytes.ByteImmutableArrayBuilder;
  * been built, it will be immutable.
  * 
  * @author Emil Forslund
- * @since  1.0.0
+ * @since  1.0.1
  */
-public interface ByteImmutableArray {
+public interface BooleanImmutableArray {
     
     /**
      * Returns the value located at the specified index in the array. If the
@@ -40,11 +40,11 @@ public interface ByteImmutableArray {
      * @param index  the index
      * @return       the value at that index
      */
-    byte getAsByte(long index);
+    boolean getAsBoolean(long index);
     
     /**
-     * Returns the length of the array (the number of bytes that can safely be
-     * retrieved using the {@link #getAsByte(long)} method).
+     * Returns the length of the array (the number of booleans that can safely
+     * be retrieved using the {@link #getAsBoolean(long)} method).
      * 
      * @return  the length
      */
@@ -62,17 +62,17 @@ public interface ByteImmutableArray {
      * @return  a new builder
      */
     static Builder builder() {
-        return new ByteImmutableArrayBuilder();
+        return new BooleanImmutableArrayBuilder();
     }
     
     /**
-     * A builder for a {@link ByteImmutableArray}. The builder can be appended
-     * with values using the {@link #append(byte)}-method until it is finalized
-     * using the {@link #build()}-method. The backing implementation will be
-     * decided once the array is built.
+     * A builder for a {@link BooleanImmutableArray}. The builder can be 
+     * appended with values using the {@link #append(boolean)}-method until it 
+     * is finalized using the {@link #build()}-method. The backing 
+     * implementation will be decided once the array is built.
      * <p>
      * The implementation of {@code Builder} is intended to handle a very large
-     * amount of bytes as well as a very small amount.
+     * amount of booleans as well as a very small amount.
      */
     interface Builder {
         
@@ -82,7 +82,7 @@ public interface ByteImmutableArray {
          * @param value  the value to append
          * @return       a reference to this builder
          */
-        ByteImmutableArray.Builder append(byte value);
+        BooleanImmutableArray.Builder append(boolean value);
     
         /**
          * Builds the array. After this method has been called, the builder
@@ -90,7 +90,7 @@ public interface ByteImmutableArray {
          * 
          * @return  the built array
          */
-        ByteImmutableArray build();
+        BooleanImmutableArray build();
         
     }
 }

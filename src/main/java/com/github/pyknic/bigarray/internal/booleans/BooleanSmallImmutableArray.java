@@ -14,37 +14,34 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.booleans;
 
-import com.github.pyknic.bigarray.IntImmutableArray;
-import com.github.pyknic.bigarray.LongImmutableArray;
+import com.github.pyknic.bigarray.BooleanImmutableArray;
+import com.github.pyknic.bigarray.internal.util.BitUtil;
+import static com.github.pyknic.bigarray.internal.util.BitUtil.BITMASK_SIZE;
 
 /**
  *
  * @author Emil Forslund
- * @since  1.0.0
+ * @since  1.0.1
  */
-final class IntImmutableArrayImpl 
-implements IntImmutableArray, LongImmutableArray {
+public final class BooleanSmallImmutableArray implements BooleanImmutableArray {
+    
+    private final short[] bitmasks;
+    private final long length;
 
-    private final int[] values;
-
-    IntImmutableArrayImpl(int[] values) {
-        this.values = values;
+    public BooleanSmallImmutableArray(short[] bitmask, long length) {
+        this.bitmasks = bitmask;
+        this.length   = length;
     }
 
     @Override
-    public long getAsLong(long index) {
-        return getAsInt(index);
-    }
-
-    @Override
-    public int getAsInt(long index) {
-        return values[(int) index];
+    public boolean getAsBoolean(long index) {
+        return BitUtil.isSet(bitmasks[(int) (index / BITMASK_SIZE)], index % BITMASK_SIZE);
     }
 
     @Override
     public long length() {
-        return values.length;
+        return length;
     }
 }

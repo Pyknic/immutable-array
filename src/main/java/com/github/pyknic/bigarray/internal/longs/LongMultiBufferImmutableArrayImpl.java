@@ -14,37 +14,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.pyknic.bigarray.internal;
+package com.github.pyknic.bigarray.internal.longs;
 
-import com.github.pyknic.bigarray.IntImmutableArray;
+import com.github.pyknic.bigarray.DoubleImmutableArray;
 import com.github.pyknic.bigarray.LongImmutableArray;
-import java.nio.IntBuffer;
-import static java.util.Objects.requireNonNull;
+import static com.github.pyknic.bigarray.internal.util.IndexUtil.innerIndex;
+import static com.github.pyknic.bigarray.internal.util.IndexUtil.outerIndex;
+import java.nio.LongBuffer;
 
 /**
  *
  * @author Emil Forslund
  * @since  1.0.0
  */
-final class IntSingleBufferImmutableArrayImpl 
-implements IntImmutableArray, LongImmutableArray {
-
-    private final IntBuffer buffer;
-    private final int length;
+public final class LongMultiBufferImmutableArrayImpl 
+implements LongImmutableArray, DoubleImmutableArray {
     
-    IntSingleBufferImmutableArrayImpl(IntBuffer buffer, int length) {
-        this.buffer = requireNonNull(buffer);
-        this.length = length;
+    private final LongBuffer[] buffers;
+    private final long length;
+
+    public LongMultiBufferImmutableArrayImpl(LongBuffer[] buffers, long length) {
+        this.buffers = buffers;
+        this.length  = length;
+    }
+
+    @Override
+    public double getAsDouble(long index) {
+        return Double.longBitsToDouble(getAsLong(index));
     }
 
     @Override
     public long getAsLong(long index) {
-        return getAsInt(index);
-    }
-    
-    @Override
-    public int getAsInt(long index) {
-        return buffer.get((int) index);
+        return buffers[outerIndex(index)].get(innerIndex(index));
     }
 
     @Override

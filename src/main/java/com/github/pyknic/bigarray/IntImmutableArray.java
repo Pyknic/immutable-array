@@ -16,7 +16,7 @@
  */
 package com.github.pyknic.bigarray;
 
-import com.github.pyknic.bigarray.internal.IntImmutableArrayBuilder;
+import com.github.pyknic.bigarray.internal.ints.IntImmutableArrayBuilder;
 
 /**
  * An immutable integer array that can hold a very large number of elements. 

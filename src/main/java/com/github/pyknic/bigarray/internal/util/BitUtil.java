@@ -23,6 +23,30 @@ package com.github.pyknic.bigarray.internal.util;
  */
 public final class BitUtil {
     
+    public final static int BITMASK_SIZE = 16;
+    
+    public static boolean isSet(short bitmask, long index) {
+        switch ((short) (index & 0xff)) {
+            case 0  : return 0b1                == (bitmask & 0b1);
+            case 1  : return 0b10               == (bitmask & 0b10);
+            case 2  : return 0b100              == (bitmask & 0b100);
+            case 3  : return 0b1000             == (bitmask & 0b1000);
+            case 4  : return 0b10000            == (bitmask & 0b10000);
+            case 5  : return 0b100000           == (bitmask & 0b100000);
+            case 6  : return 0b1000000          == (bitmask & 0b1000000);
+            case 7  : return 0b10000000         == (bitmask & 0b10000000);
+            case 8  : return 0b100000000        == (bitmask & 0b100000000);
+            case 9  : return 0b1000000000       == (bitmask & 0b1000000000);
+            case 10 : return 0b10000000000      == (bitmask & 0b10000000000);
+            case 11 : return 0b100000000000     == (bitmask & 0b100000000000);
+            case 12 : return 0b1000000000000    == (bitmask & 0b1000000000000);
+            case 13 : return 0b10000000000000   == (bitmask & 0b10000000000000);
+            case 14 : return 0b100000000000000  == (bitmask & 0b100000000000000);
+            case 15 : return 0b1000000000000000 == (bitmask & 0b1000000000000000);
+            default : throw new ArrayIndexOutOfBoundsException();
+        }
+    }
+    
     public static boolean isLongToBytePossible(long value) {
         return 0L == (value & 0x7fffffffffffff80L);
     }
