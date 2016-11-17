@@ -1,7 +1,8 @@
 # Immutable Array
 Read-only primitive Java arrays backed by Direct Buffers and indexed using 64-bit indexes
 
-The library uses a Builder Pattern for the array classes. When the builder is finalized, an appropriate implementation of the interface is choosen to fit the data. Here are some optimizations that is done upon build:
+The library uses a Builder Pattern for the array classes. When the builder is finalized, an appropriate implementation of the interface is choosen to fit the data. Here are some optimizations that are done upon build:
+
 * Special implementation for empty arrays
 * Small arrays are backed by an OnHeap array (regular `long[]`, `int[]`, etc)
 * Medium sized arrays are backed by a single `DirectBuffer`
