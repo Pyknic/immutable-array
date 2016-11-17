@@ -5,7 +5,7 @@ The library uses a Builder Pattern for the array classes. When the builder is fi
 * Special implementation for empty arrays
 * Small arrays are backed by an OnHeap array (regular `long[]`, `int[]`, etc)
 * Medium sized arrays are backed by a single `DirectBuffer`
-* Very large arrays (more than can be indexed with a 32-bit int) are backed by a number of direct buffers
+* Very large arrays (more than 2^26 elements) are backed by a number of direct buffers
 * If all values fit a smaller primitive, they will be warped (`long` to `int`, `int` to `short` etc)
 
 ## Features
