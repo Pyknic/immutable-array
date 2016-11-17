@@ -18,13 +18,13 @@ The library uses a Builder Pattern for the array classes. When the builder is fi
 
 ## Supported Types
 The following interfaces are part of the API:
-* BooleanImmutableArray
-* ByteImmutableArray
-* DoubleImmutableArray
-* FloatImmutableArray
-* IntImmutableArray
-* LongImmutableArray
-* ShortImmutableArray
+* `BooleanImmutableArray`
+* `ByteImmutableArray`
+* `DoubleImmutableArray`
+* `FloatImmutableArray`
+* `IntImmutableArray`
+* `LongImmutableArray`
+* `ShortImmutableArray`
 
 ## Example
 ```java
