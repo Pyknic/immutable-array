@@ -1,5 +1,6 @@
 # Immutable Array
 [![Javadocs](http://javadoc.io/badge/com.github.pyknic/immutable-array.svg)](http://javadoc.io/doc/com.github.pyknic/immutable-array)
+
 Read-only primitive Java arrays backed by Direct Buffers and indexed using 64-bit indexes
 
 The library uses a Builder Pattern for the array classes. When the builder is finalized, an appropriate implementation of the interface is choosen to fit the data. Here are some optimizations that are done upon build:
