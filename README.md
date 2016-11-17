@@ -53,7 +53,7 @@ Add the following to your `pom.xml`-file. The library has no external dependenci
 <dependency>
     <groupId>com.github.pyknic</groupId>
     <artifactId>immutable-array</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
