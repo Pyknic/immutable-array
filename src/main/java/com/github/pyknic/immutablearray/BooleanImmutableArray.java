@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2006-2016, Emil Forslund. All Rights Reserved.
+ * Copyright (c) 2016-2016, Emil Forslund. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not
  * use this file except in compliance with the License. You may obtain a copy of
