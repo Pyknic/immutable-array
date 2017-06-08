@@ -113,7 +113,7 @@
                         <configuration>
                             <header>license_header.txt</header>
                             <properties>
-                                <currentYear>2016</currentYear>
+                                <currentYear>2017</currentYear>
                             </properties>
                             <excludes>
                                 <exclude>**/README</exclude>
@@ -136,7 +136,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -149,7 +149,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
+                        <version>2.10.4</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -177,7 +177,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <useagent>true</useagent>
+                            <useAgent>true</useAgent>
                             <keyname>${gpg.keyname}</keyname>
                             <passphrase>${gpg.passphrase}</passphrase>
                             <executable>${gpg.executable}</executable>
@@ -186,7 +186,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.3</version>
+                        <version>1.6.8</version>
                         <extensions>true</extensions>
                         <executions>
                             <execution>
