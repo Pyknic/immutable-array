@@ -2,3 +2,5 @@
 sonar-project.properties
 /target/
 nb-configuration.xml
+*.iml
+.idea
